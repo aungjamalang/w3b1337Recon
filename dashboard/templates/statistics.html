@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}Statistics{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="bi bi-bar-chart"></i> Detailed Statistics</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card p-4">
+            <h5>Reports by Category</h5>
+            <canvas id="categoryPie" height="300"></canvas>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card p-4">
+            <h5>Reports by Platform</h5>
+            <canvas id="platformBar" height="300"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <div class="card p-4">
+            <h5>Summary</h5>
+            <div class="row text-center">
+                <div class="col-3">
+                    <h2 class="text-primary">{{ stats.total_reports }}</h2>
+                    <p class="text-muted">Reports</p>
+                </div>
+                <div class="col-3">
+                    <h2 class="text-success">{{ stats.total_payloads }}</h2>
+                    <p class="text-muted">Payloads</p>
+                </div>
+                <div class="col-3">
+                    <h2 class="text-warning">{{ stats.total_parameters }}</h2>
+                    <p class="text-muted">Parameters</p>
+                </div>
+                <div class="col-3">
+                    <h2 class="text-info">{{ stats.total_patterns }}</h2>
+                    <p class="text-muted">Patterns</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h5>Category Breakdown</h5>
+            <table class="table table-sm">
+                <thead><tr><th>Category</th><th>Reports</th><th>%</th></tr></thead>
+                <tbody>
+                {% for cat, count in stats.reports_by_category.items() %}
+                <tr>
+                    <td>{{ cat|upper }}</td>
+                    <td>{{ count }}</td>
+                    <td>{{ "%.1f"|format(count / stats.total_reports * 100 if stats.total_reports else 0) }}%</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h5>Platform Breakdown</h5>
+            <table class="table table-sm">
+                <thead><tr><th>Platform</th><th>Reports</th><th>%</th></tr></thead>
+                <tbody>
+                {% for plat, count in stats.reports_by_platform.items() %}
+                <tr>
+                    <td>{{ plat|capitalize }}</td>
+                    <td>{{ count }}</td>
+                    <td>{{ "%.1f"|format(count / stats.total_reports * 100 if stats.total_reports else 0) }}%</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const catData = {{ stats.reports_by_category | tojson }};
+const colors = ['#f85149','#58a6ff','#d29922','#3fb950','#bc8cff','#f778ba','#79c0ff','#ffa657','#a5d6ff','#7ee787'];
+
+new Chart(document.getElementById('categoryPie'), {
+    type: 'pie',
+    data: { labels: Object.keys(catData), datasets: [{ data: Object.values(catData), backgroundColor: colors }] },
+    options: { responsive: true, plugins: { legend: { position: 'right', labels: { color: '#c9d1d9' } } } }
+});
+
+const platData = {{ stats.reports_by_platform | tojson }};
+new Chart(document.getElementById('platformBar'), {
+    type: 'bar',
+    data: { labels: Object.keys(platData), datasets: [{ label: 'Reports', data: Object.values(platData), backgroundColor: '#58a6ff' }] },
+    options: { responsive: true, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#8b949e' } }, y: { ticks: { color: '#8b949e' } } } }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="bi bi-speedometer2"></i> Dashboard</h2>
+        <p class="text-muted">Bug Bounty Recon Framework Overview</p>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card stat-card p-3 text-center">
+            <h3 class="text-primary">{{ stats.total_reports }}</h3>
+            <small class="text-muted"><i class="bi bi-file-text"></i> Total Reports</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card p-3 text-center">
+            <h3 class="text-success">{{ stats.total_payloads }}</h3>
+            <small class="text-muted"><i class="bi bi-code-slash"></i> Payloads</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card p-3 text-center">
+            <h3 class="text-warning">{{ stats.total_parameters }}</h3>
+            <small class="text-muted"><i class="bi bi-input-cursor"></i> Parameters</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card p-3 text-center">
+            <h3 class="text-info">{{ stats.total_patterns }}</h3>
+            <small class="text-muted"><i class="bi bi-diagram-3"></i> Patterns</small>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h5><i class="bi bi-pie-chart"></i> Reports by Category</h5>
+            <canvas id="categoryChart" height="250"></canvas>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h5><i class="bi bi-bar-chart"></i> Reports by Platform</h5>
+            <canvas id="platformChart" height="250"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Category Breakdown Table -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h5><i class="bi bi-list-task"></i> Category Breakdown</h5>
+            <table class="table table-sm table-hover">
+                <thead><tr><th>Category</th><th>Count</th><th>Action</th></tr></thead>
+                <tbody>
+                {% for cat, count in stats.reports_by_category.items() %}
+                <tr>
+                    <td><span class="badge bg-secondary">{{ cat }}</span></td>
+                    <td>{{ count }}</td>
+                    <td><a href="/reports?category={{ cat }}" class="btn btn-sm btn-outline-primary">View</a></td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h5><i class="bi bi-globe"></i> Platform Distribution</h5>
+            <table class="table table-sm table-hover">
+                <thead><tr><th>Platform</th><th>Count</th><th>Action</th></tr></thead>
+                <tbody>
+                {% for plat, count in stats.reports_by_platform.items() %}
+                <tr>
+                    <td><span class="badge bg-info">{{ plat }}</span></td>
+                    <td>{{ count }}</td>
+                    <td><a href="/reports?platform={{ plat }}" class="btn btn-sm btn-outline-primary">View</a></td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Category Chart
+const catData = {{ stats.reports_by_category | tojson }};
+const catLabels = Object.keys(catData);
+const catValues = Object.values(catData);
+const catColors = ['#f85149','#58a6ff','#d29922','#3fb950','#bc8cff','#f778ba','#79c0ff','#ffa657'];
+
+new Chart(document.getElementById('categoryChart'), {
+    type: 'doughnut',
+    data: { labels: catLabels, datasets: [{ data: catValues, backgroundColor: catColors.slice(0, catLabels.length) }] },
+    options: { responsive: true, plugins: { legend: { position: 'right', labels: { color: '#c9d1d9' } } } }
+});
+
+// Platform Chart
+const platData = {{ stats.reports_by_platform | tojson }};
+new Chart(document.getElementById('platformChart'), {
+    type: 'bar',
+    data: { labels: Object.keys(platData), datasets: [{ label: 'Reports', data: Object.values(platData), backgroundColor: '#58a6ff' }] },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { ticks: { color: '#8b949e' } }, x: { ticks: { color: '#8b949e' } } } }
+});
+</script>
+{% endblock %}

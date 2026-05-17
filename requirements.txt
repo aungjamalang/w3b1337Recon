@@ -1,0 +1,35 @@
+# W3b1337Recon - Bug Bounty Recon Framework Dependencies
+
+# Core
+aiohttp>=3.9.0
+asyncio-throttle>=1.0.2
+click>=8.1.0
+colorama>=0.4.6
+pyyaml>=6.0.1
+pydantic>=2.0.0
+
+# HTTP
+httpx>=0.25.0
+aiohttp-socks>=0.8.0
+
+# Web Scraping & Parsing
+beautifulsoup4>=4.12.0
+lxml>=4.9.0
+
+# Database
+sqlalchemy>=2.0.0
+
+# Dashboard
+flask>=3.0.0
+jinja2>=3.1.0
+
+# Utilities
+python-dateutil>=2.8.0
+tqdm>=4.65.0
+rich>=13.0.0
+
+# Development (optional)
+# pytest>=7.0.0
+# pytest-asyncio>=0.21.0
+# black>=23.0.0
+# flake8>=6.0.0

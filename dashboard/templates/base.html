@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}W3b1337Recon{% endblock %} - Bug Bounty Recon Framework</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { background-color: #0d1117; color: #c9d1d9; }
+        .navbar { background-color: #161b22 !important; border-bottom: 1px solid #30363d; }
+        .card { background-color: #161b22; border: 1px solid #30363d; }
+        .table { color: #c9d1d9; }
+        .badge-critical { background-color: #da3633; }
+        .badge-high { background-color: #f85149; }
+        .badge-medium { background-color: #d29922; }
+        .badge-low { background-color: #3fb950; }
+        .badge-info { background-color: #58a6ff; }
+        .stat-card { transition: transform 0.2s; }
+        .stat-card:hover { transform: translateY(-2px); }
+        .sidebar { background-color: #161b22; border-right: 1px solid #30363d; min-height: calc(100vh - 56px); }
+        .sidebar .nav-link { color: #8b949e; padding: 0.5rem 1rem; }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active { color: #58a6ff; background-color: #1f2937; }
+        .search-box { background-color: #0d1117; border: 1px solid #30363d; color: #c9d1d9; }
+        a { color: #58a6ff; }
+        .text-muted { color: #8b949e !important; }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="bi bi-shield-lock"></i> W3b1337Recon
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="/"><i class="bi bi-house"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/reports"><i class="bi bi-file-text"></i> Reports</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/payloads"><i class="bi bi-code-slash"></i> Payloads</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/parameters"><i class="bi bi-input-cursor"></i> Parameters</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/patterns"><i class="bi bi-diagram-3"></i> Patterns</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/statistics"><i class="bi bi-bar-chart"></i> Statistics</a></li>
+                </ul>
+                <form class="d-flex" action="/reports" method="GET">
+                    <input class="form-control search-box me-2" type="search" name="q" placeholder="Search reports..." aria-label="Search">
+                    <button class="btn btn-outline-primary" type="submit"><i class="bi bi-search"></i></button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid mt-4">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center text-muted py-4 mt-5">
+        <small>W3b1337Recon - Bug Bounty Recon Framework | For authorized testing only</small>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.0.0/dist/chart.umd.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Payloads{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="bi bi-code-slash"></i> Payload Browser</h2>
+    </div>
+</div>
+
+<!-- Category Filter -->
+<div class="mb-4">
+    <a href="/payloads" class="btn btn-sm {% if not selected %}btn-primary{% else %}btn-outline-primary{% endif %}">All</a>
+    {% for cat in categories %}
+    <a href="/payloads?category={{ cat }}" class="btn btn-sm {% if selected == cat %}btn-primary{% else %}btn-outline-primary{% endif %}">{{ cat|upper }}</a>
+    {% endfor %}
+</div>
+
+<!-- Payloads Table -->
+<div class="card p-3">
+    <div class="table-responsive">
+        <table class="table table-hover table-sm">
+            <thead>
+                <tr><th>Category</th><th>Payload</th><th>Type</th><th>Bypass</th><th>Tags</th></tr>
+            </thead>
+            <tbody>
+            {% for payload in payloads %}
+            <tr>
+                <td><span class="badge bg-secondary">{{ payload.category }}</span></td>
+                <td><code class="text-break">{{ payload.value[:120] }}</code></td>
+                <td><small>{{ payload.payload_type or '-' }}</small></td>
+                <td>{% if payload.bypass %}<i class="bi bi-check-circle text-warning"></i>{% else %}-{% endif %}</td>
+                <td><small class="text-muted">{{ payload.tags or '' }}</small></td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="text-center text-muted">No payloads found. Run <code>bugrecon analyze</code> to generate.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Reports{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="bi bi-file-text"></i> Reports <span class="badge bg-secondary">{{ total }}</span></h2>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card p-3 mb-4">
+    <form method="GET" action="/reports" class="row g-3">
+        <div class="col-md-3">
+            <select name="category" class="form-select search-box">
+                <option value="">All Categories</option>
+                {% for cat in ['ssrf','xss','sqli','idor','business_logic','rce','lfi','xxe','csrf','open_redirect'] %}
+                <option value="{{ cat }}" {% if category == cat %}selected{% endif %}>{{ cat|upper }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="platform" class="form-select search-box">
+                <option value="">All Platforms</option>
+                {% for p in ['hackerone','bugcrowd','intigriti','yeswehack','github'] %}
+                <option value="{{ p }}" {% if platform == p %}selected{% endif %}>{{ p|capitalize }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="severity" class="form-select search-box">
+                <option value="">All Severities</option>
+                {% for s in ['critical','high','medium','low'] %}
+                <option value="{{ s }}" {% if severity == s %}selected{% endif %}>{{ s|capitalize }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <input type="text" name="q" class="form-control search-box" placeholder="Keyword search..." value="{{ keyword or '' }}">
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100"><i class="bi bi-filter"></i> Filter</button>
+        </div>
+    </form>
+</div>
+
+<!-- Reports Table -->
+<div class="card p-3">
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Severity</th>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Platform</th>
+                    <th>Bounty</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for report in reports %}
+            <tr>
+                <td>
+                    {% if report.severity == 'critical' %}<span class="badge badge-critical">Critical</span>
+                    {% elif report.severity == 'high' %}<span class="badge badge-high">High</span>
+                    {% elif report.severity == 'medium' %}<span class="badge badge-medium">Medium</span>
+                    {% elif report.severity == 'low' %}<span class="badge badge-low">Low</span>
+                    {% else %}<span class="badge bg-secondary">{{ report.severity or 'N/A' }}</span>{% endif %}
+                </td>
+                <td><a href="/reports/{{ report.id }}">{{ report.title[:80] }}</a></td>
+                <td><span class="badge bg-secondary">{{ report.category }}</span></td>
+                <td>{{ report.platform }}</td>
+                <td>{% if report.bounty_amount %}${{ "%.0f"|format(report.bounty_amount) }}{% else %}-{% endif %}</td>
+                <td><small class="text-muted">{{ report.disclosed_date or report.created_at[:10] }}</small></td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6" class="text-center text-muted">No reports found</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if total_pages > 1 %}
+    <nav>
+        <ul class="pagination justify-content-center">
+            <li class="page-item {% if page <= 1 %}disabled{% endif %}">
+                <a class="page-link" href="?page={{ page-1 }}&category={{ category or '' }}&platform={{ platform or '' }}&severity={{ severity or '' }}&q={{ keyword or '' }}">Prev</a>
+            </li>
+            {% for p in range(1, total_pages+1) %}{% if p <= 5 or p > total_pages-5 or (p >= page-2 and p <= page+2) %}
+            <li class="page-item {% if p == page %}active{% endif %}">
+                <a class="page-link" href="?page={{ p }}&category={{ category or '' }}&platform={{ platform or '' }}&severity={{ severity or '' }}&q={{ keyword or '' }}">{{ p }}</a>
+            </li>
+            {% endif %}{% endfor %}
+            <li class="page-item {% if page >= total_pages %}disabled{% endif %}">
+                <a class="page-link" href="?page={{ page+1 }}&category={{ category or '' }}&platform={{ platform or '' }}&severity={{ severity or '' }}&q={{ keyword or '' }}">Next</a>
+            </li>
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

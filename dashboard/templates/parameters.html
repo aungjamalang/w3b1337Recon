@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Parameters{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="bi bi-input-cursor"></i> Top Attacked Parameters</h2>
+        <p class="text-muted">Most frequently targeted parameters across all reports</p>
+    </div>
+</div>
+
+<!-- Category Filter -->
+<div class="mb-4">
+    <a href="/parameters" class="btn btn-sm {% if not selected %}btn-primary{% else %}btn-outline-primary{% endif %}">All</a>
+    {% for cat in categories %}
+    <a href="/parameters?category={{ cat }}" class="btn btn-sm {% if selected == cat %}btn-primary{% else %}btn-outline-primary{% endif %}">{{ cat|upper }}</a>
+    {% endfor %}
+</div>
+
+<div class="card p-3">
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr><th>#</th><th>Parameter</th><th>Category</th><th>Frequency</th><th>Reports</th></tr>
+            </thead>
+            <tbody>
+            {% for param in parameters %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td><code>{{ param.name }}</code></td>
+                <td><span class="badge bg-secondary">{{ param.category }}</span></td>
+                <td>
+                    <div class="progress" style="height: 20px; min-width: 100px;">
+                        <div class="progress-bar bg-primary" style="width: {{ [param.total_freq * 5, 100]|min }}%">{{ param.total_freq }}</div>
+                    </div>
+                </td>
+                <td>{{ param.report_count }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="text-center text-muted">No parameters found</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

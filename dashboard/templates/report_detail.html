@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}{{ report.title }}{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/reports">Reports</a></li>
+                <li class="breadcrumb-item active">{{ report.title[:50] }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card p-4 mb-4">
+            <h3>{{ report.title }}</h3>
+            <div class="mt-3">
+                {% if report.severity == 'critical' %}<span class="badge badge-critical">Critical</span>
+                {% elif report.severity == 'high' %}<span class="badge badge-high">High</span>
+                {% elif report.severity == 'medium' %}<span class="badge badge-medium">Medium</span>
+                {% elif report.severity == 'low' %}<span class="badge badge-low">Low</span>
+                {% else %}<span class="badge bg-secondary">{{ report.severity }}</span>{% endif %}
+                <span class="badge bg-secondary ms-2">{{ report.category }}</span>
+                <span class="badge bg-info ms-2">{{ report.platform }}</span>
+            </div>
+
+            {% if report.url %}
+            <div class="mt-3">
+                <strong>Source:</strong> <a href="{{ report.url }}" target="_blank">{{ report.url }}</a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Raw Data -->
+        {% if raw_data %}
+        <div class="card p-4">
+            <h5>Report Data</h5>
+            {% if raw_data.payloads %}
+            <h6 class="mt-3">Payloads</h6>
+            <ul>{% for p in raw_data.payloads %}<li><code>{{ p }}</code></li>{% endfor %}</ul>
+            {% endif %}
+
+            {% if raw_data.parameters_attacked %}
+            <h6 class="mt-3">Parameters Attacked</h6>
+            <ul>{% for p in raw_data.parameters_attacked %}<li><code>{{ p }}</code></li>{% endfor %}</ul>
+            {% endif %}
+
+            {% if raw_data.bypass_methods %}
+            <h6 class="mt-3">Bypass Methods</h6>
+            <ul>{% for b in raw_data.bypass_methods %}<li>{{ b }}</li>{% endfor %}</ul>
+            {% endif %}
+
+            {% if raw_data.exploitation_steps %}
+            <h6 class="mt-3">Exploitation Steps</h6>
+            <ol>{% for s in raw_data.exploitation_steps %}<li>{{ s }}</li>{% endfor %}</ol>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-md-4">
+        <div class="card p-3 mb-3">
+            <h6>Details</h6>
+            <table class="table table-sm">
+                <tr><td class="text-muted">ID</td><td><small>{{ report.id }}</small></td></tr>
+                <tr><td class="text-muted">Platform</td><td>{{ report.platform }}</td></tr>
+                <tr><td class="text-muted">Category</td><td>{{ report.category }}</td></tr>
+                <tr><td class="text-muted">Severity</td><td>{{ report.severity }}</td></tr>
+                <tr><td class="text-muted">Bounty</td><td>{% if report.bounty_amount %}${{ "%.0f"|format(report.bounty_amount) }}{% else %}N/A{% endif %}</td></tr>
+                <tr><td class="text-muted">Researcher</td><td>{{ report.researcher or 'Unknown' }}</td></tr>
+                <tr><td class="text-muted">Disclosed</td><td>{{ report.disclosed_date or 'N/A' }}</td></tr>
+                <tr><td class="text-muted">Collected</td><td>{{ report.created_at[:10] }}</td></tr>
+            </table>
+        </div>
+
+        <div class="card p-3">
+            <h6>Actions</h6>
+            {% if report.url %}
+            <a href="{{ report.url }}" target="_blank" class="btn btn-sm btn-outline-primary w-100 mb-2">
+                <i class="bi bi-box-arrow-up-right"></i> View Original
+            </a>
+            {% endif %}
+            <a href="/reports?category={{ report.category }}" class="btn btn-sm btn-outline-secondary w-100 mb-2">
+                <i class="bi bi-filter"></i> More {{ report.category|upper }}
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
